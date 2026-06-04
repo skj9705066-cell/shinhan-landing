@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>신한라이프 어드민</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css">
+<style>
+  :root {
+    --blue:#1A6FE8; --blue-d:#1558C0;
+    --text:#111; --mid:#555; --soft:#888;
+    --line:#EEEEEE; --bg:#F5F7FA; --white:#FFF;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  body{font-family:'Pretendard',-apple-system,sans-serif;background:var(--bg);color:var(--text);font-size:14px;line-height:1.5}
+  button,input,select,textarea{font-family:inherit}
+
+  /* ── LOGIN ── */
+  .login-wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#EEF4FF,#F5F7FA);padding:24px}
+  .login-card{background:var(--white);border-radius:20px;padding:48px 40px;width:100%;max-width:400px;box-shadow:0 8px 40px rgba(0,0,0,.10)}
+  .login-logo{font-size:1.3rem;font-weight:800;margin-bottom:6px;letter-spacing:-.02em}
+  .login-logo span{color:var(--blue)}
+  .login-sub{font-size:.85rem;color:var(--soft);margin-bottom:36px}
+  .login-field{margin-bottom:18px}
+  .login-label{display:block;font-size:.82rem;font-weight:700;color:var(--mid);margin-bottom:8px}
+  .login-input{width:100%;padding:14px 16px;border:1.5px solid var(--line);border-radius:12px;font-size:.95rem;outline:none;transition:border .2s,box-shadow .2s;background:#FAFAFA}
+  .login-input:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(26,111,232,.12);background:var(--white)}
+  .login-btn{width:100%;background:var(--blue);color:var(--white);padding:15px;border-radius:12px;font-weight:700;font-size:1rem;border:none;margin-top:8px;cursor:pointer;transition:background .2s,transform .15s}
+  .login-btn:hover{background:var(--blue-d);transform:translateY(-1px)}
+  .login-error{color:#EF4444;font-size:.82rem;margin-top:12px;display:none;text-align:center;background:#FEF2F2;padding:10px;border-radius:8px}
+  .login-error.show{display:block}
+
+  /* ── BANNER ── */
+  .gas-banner{background:#FFFBEB;border-bottom:1px solid #FCD34D;padding:10px 28px;font-size:.82rem;color:#92400E;display:flex;align-items:center;gap:8px}
+  .gas-banner a{color:var(--blue);font-weight:700;cursor:pointer}
+
+  /* ── LAYOUT ── */
+  .admin-header{background:var(--white);border-bottom:1px solid var(--line);padding:0 28px;height:62px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:200;box-shadow:0 1px 6px rgba(0,0,0,.04)}
+  .admin-brand{font-size:1.05rem;font-weight:800;letter-spacing:-.02em}
+  .admin-brand span{color:var(--blue)}
+  .admin-brand-sub{font-size:.72rem;color:var(--soft);font-weight:400;margin-left:8px}
+  .admin-user{display:flex;align-items:center;gap:14px}
+  .admin-user-label{font-size:.82rem;color:var(--soft)}
+  .btn-logout{background:none;border:1.5px solid var(--line);padding:7px 16px;border-radius:8px;font-size:.82rem;color:var(--mid);cursor:pointer;font-weight:600;transition:all .2s}
+  .btn-logout:hover{border-color:var(--blue);color:var(--blue)}
+  .admin-body{max-width:1440px;margin:0 auto;padding:28px 28px 80px}
+
+  /* ── PAGE TITLE ── */
+  .page-ttl{font-size:1.35rem;font-weight:800;margin-bottom:22px;letter-spacing:-.025em}
+  .page-ttl span{color:var(--blue)}
+
+  /* ── STATS ── */
+  .stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:22px}
+  @media(max-width:900px){.stats-grid{grid-template-columns:repeat(2,1fr)}}
+  @media(max-width:480px){.stats-grid{gap:10px}}
+  .stat-card{background:var(--white);border-radius:14px;padding:22px 24px;border:1px solid var(--line);box-shadow:0 1px 6px rgba(0,0,0,.04)}
+  .stat-icon{font-size:1.5rem;margin-bottom:10px}
+  .stat-label{font-size:.75rem;color:var(--soft);font-weight:700;margin-bottom:6px;letter-spacing:.04em;text-transform:uppercase}
+  .stat-num{font-size:2.2rem;font-weight:800;line-height:1;letter-spacing:-.04em}
+  .c-blue .stat-num{color:var(--blue)}
+  .c-purple .stat-num{color:#7C3AED}
+  .c-orange .stat-num{color:#D97706}
+  .c-green .stat-num{color:#059669}
+
+  /* ── FILTER ── */
+  .filter-bar{background:var(--white);border-radius:14px;padding:16px 20px;border:1px solid var(--line);margin-bottom:16px;display:flex;flex-wrap:wrap;gap:10px;align-items:center;box-shadow:0 1px 6px rgba(0,0,0,.04)}
+  .filter-group{display:flex;align-items:center;gap:6px}
+  .filter-label{font-size:.78rem;color:var(--soft);font-weight:700;white-space:nowrap}
+  .filter-input{padding:9px 12px;border:1.5px solid var(--line);border-radius:9px;font-size:.85rem;outline:none;color:var(--text);transition:border .2s;background:#FAFAFA}
+  .filter-input:focus{border-color:var(--blue);background:var(--white)}
+  .w-search{min-width:200px}
+  .filter-sep{color:#CCC}
+  .ml-auto{margin-left:auto}
+  .btn{padding:9px 18px;border-radius:9px;font-size:.85rem;font-weight:700;border:none;cursor:pointer;transition:all .18s;display:inline-flex;align-items:center;gap:6px}
+  .btn-outline{background:var(--white);color:var(--mid);border:1.5px solid var(--line)}
+  .btn-outline:hover{border-color:var(--blue);color:var(--blue)}
+  .btn-green{background:#059669;color:var(--white)}
+  .btn-green:hover{background:#047857}
+  .btn-reload{background:var(--white);color:var(--blue);border:1.5px solid var(--blue)}
+  .btn-reload:hover{background:#EEF4FF}
+
+  /* ── TABLE ── */
+  .table-card{background:var(--white);border-radius:14px;border:1px solid var(--line);overflow:hidden;box-shadow:0 1px 6px rgba(0,0,0,.04)}
+  .table-head-row{padding:16px 22px;border-bottom:1px solid #F3F3F3;display:flex;align-items:center;gap:10px}
+  .table-title{font-size:.95rem;font-weight:800}
+  .table-count{font-size:.82rem;color:var(--soft);background:var(--bg);padding:3px 10px;border-radius:20px;font-weight:600}
+  .table-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch}
+  table{width:100%;border-collapse:collapse;min-width:960px}
+  thead th{padding:11px 14px;text-align:left;font-size:.72rem;font-weight:700;color:var(--soft);background:#FAFAFA;border-bottom:1.5px solid var(--line);white-space:nowrap;letter-spacing:.06em;text-transform:uppercase}
+  tbody tr{border-bottom:1px solid #F7F7F7;transition:background .12s}
+  tbody tr:last-child{border-bottom:none}
+  tbody tr:hover{background:#F8FBFF}
+  tbody td{padding:12px 14px;font-size:.84rem;color:#333;vertical-align:middle}
+  .td-num{color:#BBB;font-size:.75rem;font-weight:600}
+  .td-date{color:var(--soft);font-size:.76rem;white-space:nowrap}
+  .td-name{font-weight:700;color:var(--text)}
+  .td-phone{font-variant-numeric:tabular-nums;letter-spacing:.02em;color:var(--mid)}
+  .td-tag{background:#F0F0F0;color:var(--mid);border-radius:5px;padding:2px 7px;font-size:.74rem;font-weight:600;display:inline-block}
+
+  /* ── STATUS SELECT ── */
+  .status-sel{padding:5px 10px;border-radius:20px;font-size:.76rem;font-weight:700;border:none;cursor:pointer;outline:none;-webkit-appearance:none;appearance:none;text-align:center}
+  .s-미연락{background:#FEF3C7;color:#D97706}
+  .s-연락완료{background:#DBEAFE;color:#1D4ED8}
+  .s-상담완료{background:#D1FAE5;color:#065F46}
+  .s-미응답{background:#F3F4F6;color:#6B7280}
+
+  /* ── MEMO ── */
+  .memo-cell{max-width:180px;min-width:100px}
+  .memo-view{cursor:pointer;padding:5px 7px;border-radius:7px;min-height:30px;white-space:pre-wrap;word-break:break-all;transition:background .15s;font-size:.82rem;line-height:1.5;display:block}
+  .memo-view:hover{background:#F3F4F6}
+  .memo-view.empty{color:#CCC;font-style:italic;font-size:.78rem}
+  .memo-ta{width:100%;padding:6px 8px;border:1.5px solid var(--blue);border-radius:7px;font-size:.82rem;resize:vertical;outline:none;min-height:56px;line-height:1.5}
+
+  /* ── DELETE ── */
+  .btn-del{background:none;border:none;color:#DDD;cursor:pointer;padding:5px 8px;border-radius:7px;font-size:1rem;transition:all .15s;line-height:1}
+  .btn-del:hover{color:#EF4444;background:#FEE2E2}
+
+  /* ── LOADING ── */
+  .loading-overlay{position:fixed;inset:0;background:rgba(255,255,255,.7);display:flex;align-items:center;justify-content:center;z-index:999;backdrop-filter:blur(2px)}
+  .spinner{width:40px;height:40px;border:3px solid #E0E7FF;border-top-color:var(--blue);border-radius:50%;animation:spin .7s linear infinite}
+  @keyframes spin{to{transform:rotate(360deg)}}
+
+  /* ── EMPTY / ERROR ── */
+  .empty-box{padding:60px 20px;text-align:center}
+  .empty-box .ei{font-size:2.8rem;margin-bottom:14px}
+  .empty-box p{color:var(--soft);font-size:.95rem}
+  .error-box{padding:20px 22px;background:#FEF2F2;border-top:1px solid #FECACA;color:#991B1B;font-size:.85rem;display:flex;align-items:center;gap:10px}
+
+  @media(max-width:600px){.admin-body{padding:16px 16px 60px}.stat-num{font-size:1.8rem}.w-search{min-width:140px}}
+</style>
+</head>
+<body>
+
+<!-- ══ LOGIN ══ -->
+<div id="loginScreen">
+  <div class="login-wrap">
+    <div class="login-card">
+      <div class="login-logo">신한라이프 <span>Admin</span></div>
+      <div class="login-sub">관리자 전용 페이지입니다</div>
+      <form id="loginForm" autocomplete="on">
+        <div class="login-field">
+          <label class="login-label">아이디</label>
+          <input type="text" class="login-input" id="loginId" placeholder="admin" autocomplete="username" />
+        </div>
+        <div class="login-field">
+          <label class="login-label">비밀번호</label>
+          <input type="password" class="login-input" id="loginPw" placeholder="••••••••" autocomplete="current-password" />
+        </div>
+        <button type="submit" class="login-btn">로그인</button>
+        <div class="login-error" id="loginError">아이디 또는 비밀번호가 올바르지 않습니다.</div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- ══ ADMIN ══ -->
+<div id="adminScreen" style="display:none">
+  <!-- GAS 미설정 안내 -->
+  <div id="gasBanner" class="gas-banner" style="display:none">
+    ⚠️ Google Apps Script URL이 아직 설정되지 않았습니다. &nbsp;현재 localStorage 데이터를 표시 중입니다. &nbsp;<a onclick="alert('admin.html 파일의 GAS_URL 변수에 배포된 스크립트 URL을 입력하세요.')">설정 방법 보기</a>
+  </div>
+
+  <header class="admin-header">
+    <div>
+      <span class="admin-brand">신한라이프 <span>Admin</span></span>
+      <span class="admin-brand-sub">신청자 관리 시스템</span>
+    </div>
+    <div class="admin-user">
+      <span class="admin-user-label" id="dataSourceLabel"></span>
+      <button class="btn-logout" onclick="logout()">로그아웃</button>
+    </div>
+  </header>
+
+  <div class="admin-body">
+    <div class="page-ttl">신청자 <span>관리</span></div>
+
+    <!-- 통계 -->
+    <div class="stats-grid">
+      <div class="stat-card c-blue">
+        <div class="stat-icon">👥</div>
+        <div class="stat-label">전체 신청자</div>
+        <div class="stat-num" id="sTotal">—</div>
+      </div>
+      <div class="stat-card c-purple">
+        <div class="stat-icon">📅</div>
+        <div class="stat-label">오늘 신청자</div>
+        <div class="stat-num" id="sToday">—</div>
+      </div>
+      <div class="stat-card c-orange">
+        <div class="stat-icon">🔔</div>
+        <div class="stat-label">미연락</div>
+        <div class="stat-num" id="sPending">—</div>
+      </div>
+      <div class="stat-card c-green">
+        <div class="stat-icon">✅</div>
+        <div class="stat-label">상담완료</div>
+        <div class="stat-num" id="sDone">—</div>
+      </div>
+    </div>
+
+    <!-- 필터 -->
+    <div class="filter-bar">
+      <div class="filter-group">
+        <span class="filter-label">기간</span>
+        <input type="date" class="filter-input" id="fFrom" />
+        <span class="filter-sep">~</span>
+        <input type="date" class="filter-input" id="fTo" />
+      </div>
+      <div class="filter-group">
+        <span class="filter-label">상태</span>
+        <select class="filter-input" id="fStatus">
+          <option value="">전체</option>
+          <option value="미연락">미연락</option>
+          <option value="연락완료">연락완료</option>
+          <option value="상담완료">상담완료</option>
+          <option value="미응답">미응답</option>
+        </select>
+      </div>
+      <input type="text" class="filter-input w-search" id="fSearch" placeholder="🔍 이름 또는 연락처" />
+      <button class="btn btn-outline" onclick="resetFilter()">초기화</button>
+      <button class="btn btn-reload" onclick="refreshData()">↺ 새로고침</button>
+      <button class="btn btn-green ml-auto" onclick="exportCSV()">📥 CSV 다운로드</button>
+    </div>
+
+    <!-- 테이블 -->
+    <div class="table-card">
+      <div class="table-head-row">
+        <span class="table-title">신청자 목록</span>
+        <span class="table-count" id="tCount">0건</span>
+      </div>
+      <div class="table-scroll">
+        <table>
+          <thead>
+            <tr>
+              <th>번호</th>
+              <th>신청일시</th>
+              <th>이름</th>
+              <th>연락처</th>
+              <th>직업</th>
+              <th>연령대</th>
+              <th>희망직무</th>
+              <th>상담시간</th>
+              <th>상태</th>
+              <th>메모</th>
+              <th>액션</th>
+            </tr>
+          </thead>
+          <tbody id="tBody"></tbody>
+        </table>
+      </div>
+      <div class="empty-box" id="emptyBox" style="display:none">
+        <div class="ei">📋</div>
+        <p id="emptyMsg">신청자가 없습니다.</p>
+      </div>
+      <div class="error-box" id="errorBox" style="display:none">
+        ⚠️ <span id="errorMsg"></span>
+      </div>
+    </div>
+  </div>
+
+  <!-- 로딩 -->
+  <div class="loading-overlay" id="loadingOverlay" style="display:none">
+    <div class="spinner"></div>
+  </div>
+</div>
+
+<script>
+// ══════════════════════════════════════════════════
+//  ★ 여기에 Google Apps Script 배포 URL을 입력하세요 ★
+  const GAS_URL = 'https://script.google.com/macros/s/AKfycbydRjWOOVxTM3dQpMi-9IqENnbfoBpOQp3m5--dJhlwqAFHbiGbysC9-QDhutJr0VWE/exec';
+// ══════════════════════════════════════════════════
+
+  const USING_GAS = GAS_URL.startsWith('https://script.google.com');
+  const LS_KEY    = 'shinhan_applications';
+  const STATUSES  = ['미연락','연락완료','상담완료','미응답'];
+  let allData     = [];
+
+  // ── 로그인 ──────────────────────────────────────
+  function checkSession() {
+    if (sessionStorage.getItem('adminLoggedIn') === '1') showAdmin();
+  }
+
+  document.getElementById('loginForm').addEventListener('submit', e => {
+    e.preventDefault();
+    const id = document.getElementById('loginId').value.trim();
+    const pw = document.getElementById('loginPw').value;
+    const err = document.getElementById('loginError');
+    if (id === 'admin' && pw === 'a126094!!') {
+      sessionStorage.setItem('adminLoggedIn', '1');
+      err.classList.remove('show');
+      showAdmin();
+    } else {
+      err.classList.add('show');
+      document.getElementById('loginPw').value = '';
+      document.getElementById('loginPw').focus();
+    }
+  });
+
+  function showAdmin() {
+    document.getElementById('loginScreen').style.display = 'none';
+    document.getElementById('adminScreen').style.display = 'block';
+    init();
+  }
+
+  function logout() {
+    sessionStorage.removeItem('adminLoggedIn');
+    document.getElementById('adminScreen').style.display = 'none';
+    document.getElementById('loginScreen').style.display = 'block';
+    document.getElementById('loginId').value = '';
+    document.getElementById('loginPw').value = '';
+    document.getElementById('loginError').classList.remove('show');
+    allData = [];
+  }
+
+  checkSession();
+
+  // ── 초기화 ──────────────────────────────────────
+  async function init() {
+    // GAS 상태 배너
+    if (!USING_GAS) {
+      document.getElementById('gasBanner').style.display = 'flex';
+      document.getElementById('dataSourceLabel').textContent = '📦 localStorage';
+    } else {
+      document.getElementById('dataSourceLabel').textContent = '☁️ Google Sheets';
+    }
+    // 필터 이벤트
+    ['fFrom','fTo','fStatus','fSearch'].forEach(id => {
+      document.getElementById(id).addEventListener('input', () => renderTable());
+    });
+    await refreshData();
+  }
+
+  // ── 데이터 로드 ─────────────────────────────────
+  async function refreshData() {
+    setLoading(true);
+    hideError();
+    try {
+      allData = await loadData();
+      updateStats();
+      renderTable();
+    } catch(e) {
+      showError('데이터를 불러오는 데 실패했습니다: ' + e.message);
+      allData = [];
+      updateStats();
+      renderTable();
+    }
+    setLoading(false);
+  }
+
+  async function loadData() {
+    if (USING_GAS) {
+      try {
+        const result = await gasGet({action: 'get'});
+        if (!result || !result.data) throw new Error('응답에 data 필드 없음');
+        return result.data;
+      } catch(gasErr) {
+        // GAS 실패 시 localStorage 폴백
+        console.warn('GAS 조회 실패, localStorage 사용:', gasErr.message);
+        showError(`Google Sheets 연결 실패 (localStorage 표시 중): ${gasErr.message}`);
+        return lsData();
+      }
+    } else {
+      return lsData();
+    }
+  }
+
+  function lsData() {
+    return JSON.parse(localStorage.getItem(LS_KEY) || '[]')
+      .map((r, i) => ({...r, rowIndex: i + 1}))
+      .sort((a, b) => (b.id || 0) - (a.id || 0));
+  }
+
+  // ── GAS 요청 헬퍼 ───────────────────────────────
+  async function gasGet(params) {
+    const url = new URL(GAS_URL);
+    Object.entries(params).forEach(([k, v]) => url.searchParams.set(k, String(v)));
+    url.searchParams.set('_t', Date.now()); // 캐시 방지
+    let resp;
+    try {
+      resp = await fetch(url.toString(), { redirect: 'follow' });
+    } catch(networkErr) {
+      throw new Error(`네트워크 오류 (CORS 또는 연결 실패): ${networkErr.message}`);
+    }
+    if (!resp.ok) throw new Error(`HTTP ${resp.status} — GAS 배포 설정 확인 필요`);
+    const text = await resp.text();
+    try {
+      return JSON.parse(text);
+    } catch(_) {
+      throw new Error(`JSON 파싱 실패 (응답: ${text.slice(0,80)}...)`);
+    }
+  }
+
+  // ── UI 헬퍼 ─────────────────────────────────────
+  function setLoading(v) {
+    document.getElementById('loadingOverlay').style.display = v ? 'flex' : 'none';
+  }
+  function showError(msg) {
+    const el = document.getElementById('errorBox');
+    document.getElementById('errorMsg').textContent = msg;
+    el.style.display = 'flex';
+  }
+  function hideError() {
+    document.getElementById('errorBox').style.display = 'none';
+  }
+
+  // ── 통계 ────────────────────────────────────────
+  function updateStats() {
+    const d = allData;
+    const today = todayStr();
+    document.getElementById('sTotal').textContent   = d.length;
+    document.getElementById('sToday').textContent   = d.filter(r => (r.createdAt||'').startsWith(today)).length;
+    document.getElementById('sPending').textContent = d.filter(r => r.status === '미연락').length;
+    document.getElementById('sDone').textContent    = d.filter(r => r.status === '상담완료').length;
+  }
+
+  function todayStr() {
+    const n = new Date(), p = v => String(v).padStart(2,'0');
+    return `${n.getFullYear()}-${p(n.getMonth()+1)}-${p(n.getDate())}`;
+  }
+
+  // ── 필터 ────────────────────────────────────────
+  function getFiltered() {
+    const from   = document.getElementById('fFrom').value;
+    const to     = document.getElementById('fTo').value;
+    const status = document.getElementById('fStatus').value;
+    const q      = document.getElementById('fSearch').value.toLowerCase().trim();
+    return allData.filter(r => {
+      const d = (r.createdAt || '').slice(0,10);
+      if (from && d < from)  return false;
+      if (to   && d > to)    return false;
+      if (status && r.status !== status) return false;
+      if (q && !(r.name||'').toLowerCase().includes(q) && !(r.phone||'').includes(q)) return false;
+      return true;
+    });
+  }
+
+  function resetFilter() {
+    ['fFrom','fTo','fSearch'].forEach(id => document.getElementById(id).value = '');
+    document.getElementById('fStatus').value = '';
+    renderTable();
+  }
+
+  // ── 테이블 렌더 ─────────────────────────────────
+  function renderTable() {
+    const rows  = getFiltered();
+    const tbody = document.getElementById('tBody');
+    const empty = document.getElementById('emptyBox');
+    document.getElementById('tCount').textContent = `${rows.length}건`;
+    if (!rows.length) {
+      tbody.innerHTML = '';
+      empty.style.display = 'block';
+      return;
+    }
+    empty.style.display = 'none';
+    tbody.innerHTML = rows.map((r, i) => rowHTML(r, rows.length - i)).join('');
+  }
+
+  function rowHTML(r, num) {
+    const ri  = r.rowIndex;
+    const lid = r.id || 0;
+    const memo = r._editing
+      ? `<textarea class="memo-ta" id="mta-${ri}" onblur="saveMemo(${ri},${lid})" onkeydown="memoKey(event,${ri},${lid})">${x(r.memo)}</textarea>`
+      : `<span class="memo-view${r.memo ? '' : ' empty'}" onclick="editMemo(${ri},${lid})">${r.memo ? x(r.memo) : '메모 추가'}</span>`;
+
+    return `<tr id="tr-${ri}">
+      <td class="td-num">${num}</td>
+      <td class="td-date">${x(r.createdAt||'')}</td>
+      <td class="td-name">${x(r.name||'')}</td>
+      <td class="td-phone">${x(r.phone||'')}</td>
+      <td><span class="td-tag">${x(r.job||'-')}</span></td>
+      <td>${x(r.age||'-')}</td>
+      <td>${x(r.topic||'-')}</td>
+      <td style="font-size:.78rem;color:var(--soft)">${x(r.time||'-')}</td>
+      <td>
+        <select class="status-sel s-${x(r.status||'미연락')}" onchange="changeStatus(${ri},${lid},this)">
+          ${STATUSES.map(s=>`<option value="${s}"${r.status===s?' selected':''}>${s}</option>`).join('')}
+        </select>
+      </td>
+      <td class="memo-cell">${memo}</td>
+      <td><button class="btn-del" onclick="del(${ri},${lid})" title="삭제">🗑</button></td>
+    </tr>`;
+  }
+
+  function x(s) {
+    return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+
+  // ── 상태 변경 ───────────────────────────────────
+  async function changeStatus(rowIndex, localId, sel) {
+    const val = sel.value;
+    sel.className = `status-sel s-${val}`;
+    if (USING_GAS) {
+      try {
+        await gasGet({action:'update', row:rowIndex, field:'status', value:val});
+      } catch(e) { showError('상태 업데이트 실패: ' + e.message); return; }
+    } else {
+      const data = JSON.parse(localStorage.getItem(LS_KEY) || '[]');
+      const idx  = data.findIndex(r => r.id === localId);
+      if (idx >= 0) { data[idx].status = val; localStorage.setItem(LS_KEY, JSON.stringify(data)); }
+    }
+    const item = allData.find(r => r.rowIndex === rowIndex);
+    if (item) item.status = val;
+    updateStats();
+  }
+
+  // ── 메모 ────────────────────────────────────────
+  function editMemo(rowIndex, localId) {
+    const item = allData.find(r => r.rowIndex === rowIndex);
+    if (item) item._editing = true;
+    renderTable();
+    setTimeout(() => {
+      const el = document.getElementById(`mta-${rowIndex}`);
+      if (el) { el.focus(); el.setSelectionRange(el.value.length, el.value.length); }
+    }, 30);
+  }
+
+  async function saveMemo(rowIndex, localId) {
+    const el  = document.getElementById(`mta-${rowIndex}`);
+    if (!el) return;
+    const val = el.value;
+    const item = allData.find(r => r.rowIndex === rowIndex);
+    if (item) { item.memo = val; delete item._editing; }
+
+    if (USING_GAS) {
+      try {
+        await gasGet({action:'update', row:rowIndex, field:'memo', value:val});
+      } catch(e) { showError('메모 저장 실패: ' + e.message); }
+    } else {
+      const data = JSON.parse(localStorage.getItem(LS_KEY) || '[]');
+      const idx  = data.findIndex(r => r.id === localId);
+      if (idx >= 0) { data[idx].memo = val; localStorage.setItem(LS_KEY, JSON.stringify(data)); }
+    }
+    renderTable();
+  }
+
+  function memoKey(e, rowIndex, localId) {
+    if (e.key === 'Escape') {
+      const item = allData.find(r => r.rowIndex === rowIndex);
+      if (item) delete item._editing;
+      renderTable();
+    }
+    if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); saveMemo(rowIndex, localId); }
+  }
+
+  // ── 삭제 ────────────────────────────────────────
+  async function del(rowIndex, localId) {
+    if (!confirm('이 신청자를 삭제하시겠습니까?')) return;
+    if (USING_GAS) {
+      setLoading(true);
+      try {
+        await gasGet({action:'delete', row:rowIndex});
+        await refreshData(); // row index 재정렬을 위해 전체 재조회
+      } catch(e) {
+        showError('삭제 실패: ' + e.message);
+        setLoading(false);
+      }
+    } else {
+      const data = JSON.parse(localStorage.getItem(LS_KEY) || '[]').filter(r => r.id !== localId);
+      localStorage.setItem(LS_KEY, JSON.stringify(data));
+      allData = allData.filter(r => r.id !== localId);
+      updateStats();
+      renderTable();
+    }
+  }
+
+  // ── CSV 다운로드 ─────────────────────────────────
+  function exportCSV() {
+    const rows = getFiltered();
+    if (!rows.length) { alert('다운로드할 데이터가 없습니다.'); return; }
+    const headers = ['번호','신청일시','이름','연락처','직업','연령대','희망직무','상담시간','상태','메모'];
+    const lines = [headers.join(',')];
+    rows.forEach((r, i) => {
+      const vals = [
+        rows.length - i,
+        r.createdAt || '',
+        r.name      || '',
+        r.phone     || '',
+        r.job       || '',
+        r.age       || '',
+        r.topic     || '',
+        r.time      || '',
+        r.status    || '',
+        r.memo      || ''
+      ].map(v => `"${String(v).replace(/"/g,'""')}"`);
+      lines.push(vals.join(','));
+    });
+    const blob = new Blob(['﻿' + lines.join('\r\n')], {type:'text/csv;charset=utf-8;'});
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = `신한라이프_신청자_${todayStr()}.csv`;
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  }
+</script>
+</body>
+</html>

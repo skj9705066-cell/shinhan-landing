@@ -1801,6 +1801,36 @@
     color: rgba(255,255,255,0.3);
     font-size: 0.75rem;
   }
+  .footer__notice {
+    font-size: 0.82rem;
+    line-height: 1.7;
+    color: rgba(255,255,255,0.55);
+    margin-bottom: 20px;
+    max-width: 760px;
+  }
+  .footer__biz {
+    display: grid;
+    gap: 7px;
+    margin: 0 0 4px;
+  }
+  .footer__biz-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px 14px;
+    font-size: 0.8rem;
+    line-height: 1.6;
+  }
+  .footer__biz dt {
+    flex: 0 0 96px;
+    color: rgba(255,255,255,0.38);
+    font-weight: 500;
+  }
+  .footer__biz dd { color: rgba(255,255,255,0.62); }
+  .footer__biz dd a { color: rgba(255,255,255,0.62); text-decoration: none; }
+  .footer__biz dd a:hover { color: var(--blue); }
+  @media (max-width: 520px) {
+    .footer__biz dt { flex-basis: 84px; }
+  }
 
   /* ================ MOBILE STICKY CTA ================ */
   .mobile-cta {
@@ -2627,10 +2657,16 @@
 <footer>
   <div class="footer__inner">
     <div class="footer__brand">신한라이프</div>
-    <p class="footer__text">서울 강남구 테헤란로 318, 신한라이프</p>
-    <p class="footer__text">
-      본 페이지는 신한라이프 위촉 파트너의 채용 상담 목적으로 운영됩니다.
+    <p class="footer__notice">
+      본 페이지는 신한라이프 라이프파트너스 모집을 위한 자사 채용 안내 페이지입니다.
     </p>
+    <dl class="footer__biz">
+      <div class="footer__biz-row"><dt>상호</dt><dd>신한라이프생명보험 주식회사</dd></div>
+      <div class="footer__biz-row"><dt>대표자</dt><dd>천상영</dd></div>
+      <div class="footer__biz-row"><dt>사업자등록번호</dt><dd>104-81-28992</dd></div>
+      <div class="footer__biz-row"><dt>사업장 소재지</dt><dd>서울특별시 중구 삼일대로 358 (을지로2가)</dd></div>
+      <div class="footer__biz-row"><dt>연락처</dt><dd><a href="tel:010-2266-2258">010-2266-2258</a></dd></div>
+    </dl>
     <p class="footer__copy">© Shinhan Life Partners. All rights reserved.</p>
   </div>
 </footer>
